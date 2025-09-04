@@ -1,0 +1,6 @@
+==== Project Snapshot ====
+Root: /Users/elkes/AndroidStudioProjects/Zmanim
+Generated: 2025-09-04T21:09:05+03:00
+
+==== Summary ====
+Files included: 0
