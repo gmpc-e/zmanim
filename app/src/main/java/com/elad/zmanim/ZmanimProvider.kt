@@ -15,6 +15,9 @@ data class ZmanResults(
     // Morning
     val alosHashachar: LocalTime?,       // עלות השחר
     val misheyakir11_5: LocalTime?,      // משיכיר ~11.5°, "זמן טלית ותפילין"
+    val misheyakir10_2: LocalTime?,      // משיכיר ~10.2°
+    val misheyakir9_5: LocalTime?,       // משיכיר ~9.5°
+    val misheyakir7_65: LocalTime?,      // משיכיר ~7.65°
 
     // Sunrise: sea-level vs visible
     val sunriseSeaLevel: LocalTime?,     // זריחה מישורית (גובה פני הים)
@@ -77,7 +80,7 @@ object ZmanimProvider {
      * Compute a rich set of zmanim:
      * - uses "visible" sunrise/sunset from the default calendar (observer at given elevation; we’ll pass 0 in the app)
      * - computes "sea-level" sunrise/sunset by re-evaluating with elevation=0
-     * - Misheyakir 11.5° for tallit/tefillin
+     * - Misheyakir variants (11.5°, 10.2°, 9.5°, 7.65°)
      * - GRA/MGA cutoffs, chatzot, mincha times, plag, tzeit (standard) and RT (72)
      */
     fun computeAll(
@@ -93,37 +96,43 @@ object ZmanimProvider {
         DebugLog.d("ComputeAll $date @ ($lat,$lon) tz=$tz elev=$observerElevationMeters")
 
         // Morning
-        val alos            = toLocalTime(czcVisible.alosHashachar, tz)
-        val misheyakir11_5  = toLocalTime(czcVisible.getMisheyakir11Point5Degrees(), tz)
+        val alos             = toLocalTime(czcVisible.alosHashachar, tz)
+        val misheyakir11_5   = toLocalTime(czcVisible.getMisheyakir11Point5Degrees(), tz)
+        val misheyakir10_2   = toLocalTime(czcVisible.getMisheyakir10Point2Degrees(), tz)
+        val misheyakir9_5    = toLocalTime(czcVisible.getMisheyakir9Point5Degrees(), tz)
+        val misheyakir7_65   = toLocalTime(czcVisible.getMisheyakir7Point65Degrees(), tz)
 
         // Sunrise (sea-level vs visible)
-        val sunriseSea      = toLocalTime(czcSea.sunrise, tz)
-        val sunriseVis      = toLocalTime(czcVisible.sunrise, tz)
+        val sunriseSea       = toLocalTime(czcSea.sunrise, tz)
+        val sunriseVis       = toLocalTime(czcVisible.sunrise, tz)
 
         // Latest times (GRA/MGA)
-        val shmaMGA         = toLocalTime(czcVisible.sofZmanShmaMGA, tz)
-        val shmaGRA         = toLocalTime(czcVisible.sofZmanShmaGRA, tz)
-        val tfilaMGA        = toLocalTime(czcVisible.sofZmanTfilaMGA, tz)
-        val tfilaGRA        = toLocalTime(czcVisible.sofZmanTfilaGRA, tz)
+        val shmaMGA          = toLocalTime(czcVisible.sofZmanShmaMGA, tz)
+        val shmaGRA          = toLocalTime(czcVisible.sofZmanShmaGRA, tz)
+        val tfilaMGA         = toLocalTime(czcVisible.sofZmanTfilaMGA, tz)
+        val tfilaGRA         = toLocalTime(czcVisible.sofZmanTfilaGRA, tz)
 
         // Midday / afternoon
-        val chatzot         = toLocalTime(czcVisible.chatzos, tz)
-        val minGedola       = toLocalTime(czcVisible.minchaGedola, tz)
-        val minKetana       = toLocalTime(czcVisible.minchaKetana, tz)
-        val plag            = toLocalTime(czcVisible.plagHamincha, tz)
+        val chatzot          = toLocalTime(czcVisible.chatzos, tz)
+        val minGedola        = toLocalTime(czcVisible.minchaGedola, tz)
+        val minKetana        = toLocalTime(czcVisible.minchaKetana, tz)
+        val plag             = toLocalTime(czcVisible.plagHamincha, tz)
 
         // Sunset (sea-level vs visible)
-        val sunsetSea       = toLocalTime(czcSea.sunset, tz)
-        val sunsetVis       = toLocalTime(czcVisible.sunset, tz)
+        val sunsetSea        = toLocalTime(czcSea.sunset, tz)
+        val sunsetVis        = toLocalTime(czcVisible.sunset, tz)
 
         // Nightfall
-        val tzeitStd        = toLocalTime(czcVisible.tzais, tz)
-        val tzeitRT72       = toLocalTime(czcVisible.tzais72, tz)
+        val tzeitStd         = toLocalTime(czcVisible.tzais, tz)
+        val tzeitRT72        = toLocalTime(czcVisible.tzais72, tz)
 
         return ZmanResults(
             date = date,
             alosHashachar = alos,
             misheyakir11_5 = misheyakir11_5,
+            misheyakir10_2 = misheyakir10_2,
+            misheyakir9_5 = misheyakir9_5,
+            misheyakir7_65 = misheyakir7_65,
             sunriseSeaLevel = sunriseSea,
             sunriseVisible = sunriseVis,
             sofZmanShmaMGA = shmaMGA,
@@ -139,5 +148,33 @@ object ZmanimProvider {
             tzeitStandard = tzeitStd,
             tzeitRT72 = tzeitRT72
         )
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Optional: quick logger to inspect values in Logcat (no UI impact)
+    // Call it from a LaunchedEffect(selectedCity,date) if you want to see values.
+    fun logMisheyakirFor(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        tz: ZoneId,
+        elevationMeters: Double = 0.0,
+        tag: String = "MisheyakirProbe"
+    ) {
+        try {
+            val czc = czcFor(date, lat, lon, tz, elevationMeters)
+            fun fmt(d: java.util.Date?) =
+                d?.toInstant()?.atZone(tz)?.toLocalTime()?.format(HHMM) ?: "--"
+
+            android.util.Log.d(tag, "---- $date @ ($lat,$lon) tz=${tz.id} elev=${elevationMeters}m ----")
+            android.util.Log.d(tag, "misheyakir11.5 : ${fmt(czc.getMisheyakir11Point5Degrees())}")
+            android.util.Log.d(tag, "misheyakir10.2 : ${fmt(czc.getMisheyakir10Point2Degrees())}")
+            android.util.Log.d(tag, "misheyakir9.5  : ${fmt(czc.getMisheyakir9Point5Degrees())}")
+            android.util.Log.d(tag, "misheyakir7.65 : ${fmt(czc.getMisheyakir7Point65Degrees())}")
+            android.util.Log.d(tag, "alos           : ${fmt(czc.alosHashachar)}")
+            android.util.Log.d(tag, "sunrise(vis)   : ${fmt(czc.sunrise)}")
+        } catch (t: Throwable) {
+            android.util.Log.e(tag, "probe failed: ${t.message}", t)
+        }
     }
 }

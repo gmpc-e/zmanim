@@ -66,8 +66,12 @@ dependencies {
     implementation("androidx.glance:glance-appwidget:1.0.0")
     // (Do NOT add glance-material3 here.)
 
+    // lottie
+    implementation("com.airbnb.android:lottie-compose:6.4.0")      // keep if you already use it
+
     // Zmanim
     implementation("com.kosherjava:zmanim:2.5.0")
+
 
     // If you enabled desugaring above:
     // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
