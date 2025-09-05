@@ -1,8 +1,6 @@
 package com.elad.zmanim
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,15 +30,14 @@ fun ShabbatCard(
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.End
             ) {
                 Text(
                     "זמני שבת קודש",
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                     textAlign = TextAlign.Right,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Icon(Icons.Default.CalendarToday, contentDescription = null)
             }
 
             Spacer(Modifier.height(8.dp))
@@ -61,17 +58,29 @@ fun ShabbatCard(
                 Spacer(Modifier.height(12.dp))
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("הדלקת נרות", fontWeight = FontWeight.SemiBold)
-                        Text(summary.candleLighting?.format(HHMM) ?: "--")
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("הדלקת נרות", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            summary.candleLighting?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
                     }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("צאת השבת", fontWeight = FontWeight.SemiBold)
-                        Text(summary.havdalah?.format(HHMM) ?: "--")
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("צאת השבת", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            summary.havdalah?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
                     }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("צאת ר״ת", fontWeight = FontWeight.SemiBold)
-                        Text(rt72FromZmanim?.format(HHMM) ?: "--")
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("צאת ר״ת", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            rt72FromZmanim?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
                     }
                 }
             }

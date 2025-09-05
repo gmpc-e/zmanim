@@ -15,6 +15,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,16 +50,25 @@ private val HHMM: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun ZmanimApp() {
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         var offset by remember { mutableStateOf(0) }
         var selectedCity by remember { mutableStateOf(Cities.all.first()) }
         var settings by remember { mutableStateOf(AppSettings(board = BoardPreset.GRA)) }
+        var selectedTab by remember { mutableStateOf(0) } // 0=זמני היום, 1=זמני שבת, 2=סיפור לשבת
 
         val tz = ZoneId.of(selectedCity.tzid)
         val date = LocalDate.now(tz).plusDays(offset.toLong())
 
-        val z = remember(date, selectedCity) {
-            ZmanimProvider.computeAll(date, selectedCity.lat, selectedCity.lon, tz, selectedCity.elevationMeters)
+        // Include board in the key so recomputation happens when changing method.
+        val z = remember(date, selectedCity, settings.board) {
+            ZmanimProvider.computeAll(
+                date,
+                selectedCity.lat,
+                selectedCity.lon,
+                tz,
+                selectedCity.elevationMeters
+            )
         }
 
         var shabbat by remember { mutableStateOf<ShabbatSummary?>(null) }
@@ -75,16 +89,38 @@ fun ZmanimApp() {
             startY = 0f, endY = 1200f
         )
 
+        LaunchedEffect(selectedCity, date) {
+            logMisheyakirFor(
+                date = date,
+                lat = selectedCity.lat,
+                lon = selectedCity.lon,
+                tz = ZoneId.of(selectedCity.tzid),
+                elevationMeters = selectedCity.elevationMeters
+            )
+        }
+
         Scaffold(
             bottomBar = {
                 BottomAppBar {
                     Row(
-                        Modifier.fillMaxWidth().padding(6.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        FilledTonalButton(onClick = { offset-- }) { Text("יום לפני") }
-                        FilledTonalButton(onClick = { offset = 0 }) { Text("היום") }
-                        FilledTonalButton(onClick = { offset++ }) { Text("יום הבא") }
+                        // back (previous day)
+                        IconButton(onClick = { offset-- }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "יום לפני")
+                        }
+                        // today (center)
+                        FilledTonalButton(onClick = { offset = 0 }) {
+                            Text("היום")
+                        }
+                        // forward (next day)
+                        IconButton(onClick = { offset++ }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "יום הבא")
+                        }
                     }
                 }
             }
@@ -111,10 +147,12 @@ fun ZmanimApp() {
                         label = "date-city-board"
                     ) { (d, city, board) ->
                         Column(Modifier.fillMaxSize().padding(12.dp)) {
+
                             CandleHeaderBox(
                                 candleLighting = shabbat?.candleLighting,
                                 tz = tz,
                                 city = city
+
                             )
 
                             Spacer(Modifier.height(8.dp))
@@ -128,18 +166,43 @@ fun ZmanimApp() {
 
                             Spacer(Modifier.height(10.dp))
 
-                            Column(Modifier.fillMaxSize()) {
-                                ShabbatCard(
+                            // Tabs: Times of Day / Shabbat / Story
+                            TabRow(selectedTabIndex = selectedTab) {
+                                Tab(
+                                    selected = selectedTab == 0,
+                                    onClick = { selectedTab = 0 },
+                                    text = { Text("זמני היום") }
+                                )
+                                Tab(
+                                    selected = selectedTab == 1,
+                                    onClick = { selectedTab = 1 },
+                                    text = { Text("זמני שבת") }
+                                )
+                                Tab(
+                                    selected = selectedTab == 2,
+                                    onClick = { selectedTab = 2 },
+                                    text = { Text("סיפור לשבת") }
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            when (selectedTab) {
+                                0 -> TimesOfDayCard(
+                                    date = d,
+                                    tz = tz,
+                                    z = z,
+                                    board = board,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                1 -> ShabbatCard(
                                     summary = shabbat,
                                     tz = tz,
                                     rt72FromZmanim = rt72FromZmanim
                                 )
-                                Spacer(Modifier.height(8.dp))
-                                TimesOfDayCard(
-                                    date = d,
-                                    tz = tz,
-                                    z = z,
-                                    modifier = Modifier.weight(1f)
+                                2 -> StoryCard(
+                                    tz = tz
+                                    // , remoteUrlTemplate = "https://example.com/stories/{key}.txt"
                                 )
                             }
                         }
@@ -151,27 +214,23 @@ fun ZmanimApp() {
 }
 
 @Composable
-
 fun CandleHeaderBox(candleLighting: ZonedDateTime?, tz: ZoneId, city: City) {
-    val headerGrad = Brush.horizontalGradient(listOf(Color(0xFFFFE082), Color(0xFFFFD54F)))
+    val headerGrad = Brush.horizontalGradient(listOf(Color(0xFFE3F2FD), Color(0xFFBBDEFB)))
+
     Surface(
         tonalElevation = 1.dp,
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End, // ✅ stay on right side
+        Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(headerGrad)
                 .padding(horizontal = 10.dp, vertical = 6.dp)
                 .fillMaxWidth()
         ) {
-            //AnimatedCandles(modifier = Modifier.size(26.dp))
-            Spacer(Modifier.width(8.dp))
             Column(
-                horizontalAlignment = Alignment.End, // ✅ keep column anchored right
+                horizontalAlignment = Alignment.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -214,7 +273,9 @@ fun ControlsBox(
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -229,6 +290,7 @@ fun TimesOfDayCard(
     date: LocalDate,
     tz: ZoneId,
     z: ZmanResults,
+    board: BoardPreset,
     modifier: Modifier = Modifier
 ) {
     val hebText = remember(date) { hebrewDateFor(date, inIsrael = true) }
@@ -268,11 +330,17 @@ fun TimesOfDayCard(
             ZRow("זמן טלית ותפילין", z.misheyakir11_5)
             ZRow("זריחה מישורית", z.sunriseSeaLevel)
             ZRow("זריחה הנראית", z.sunriseVisible)
+
             Spacer(Modifier.height(6.dp))
-            ZRow("סו\"ז ק\"ש מג\"א", z.sofZmanShmaMGA)
-            ZRow("סו\"ז ק\"ש גרא", z.sofZmanShmaGRA)
-            ZRow("סו\"ז תפילה מג\"א", z.sofZmanTfilaMGA)
-            ZRow("סו\"ז תפילה גרא", z.sofZmanTfilaGRA)
+
+            val isMGA = board == BoardPreset.MGA
+            val isGRA = board == BoardPreset.GRA
+
+            ZRow("סו\"ז ק\"ש מג\"א", z.sofZmanShmaMGA, selected = isMGA)
+            ZRow("סו\"ז ק\"ש גרא", z.sofZmanShmaGRA, selected = isGRA)
+            ZRow("סו\"ז תפילה מג\"א", z.sofZmanTfilaMGA, selected = isMGA)
+            ZRow("סו\"ז תפילה גרא", z.sofZmanTfilaGRA, selected = isGRA)
+
             Spacer(Modifier.height(6.dp))
             ZRow("חצות היום", z.chatzot)
             ZRow("מנחה גדולה", z.minchaGedola)
@@ -288,12 +356,16 @@ fun TimesOfDayCard(
 }
 
 @Composable
-private fun ZRow(label: String, time: LocalTime?) {
+private fun ZRow(label: String, time: LocalTime?, selected: Boolean = false) {
     val timeText = time?.format(HHMM) ?: "--"
+    val base = MaterialTheme.typography.bodyLarge
+    val style = if (selected) base.copy(fontWeight = FontWeight.SemiBold) else base
     Text(
         text = "$label: $timeText",
-        style = MaterialTheme.typography.bodyLarge,
+        style = style,
         textAlign = TextAlign.Right,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
     )
 }
