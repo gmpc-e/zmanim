@@ -1,0 +1,2427 @@
+==== Project Snapshot ====
+Root: /Users/elkes/AndroidStudioProjects/Zmanim
+Generated: Fri Sep  5 15:45:17 IDT 2025
+
+===== BEGIN FILE: app/build.gradle.kts =====
+Size: 2321 bytes
+Lines: 78
+SHA256: 19f166fed23499578c291ca3e93f5d6b69f1d9ae6221d4f1a85159b2f629eaeb
+
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+}
+
+android {
+    namespace = "com.elad.zmanim"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.elad.zmanim"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 2
+        versionName = "1.1"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        // If you need java.time on very old APIs, enable desugaring and add the dependency below.
+        // isCoreLibraryDesugaringEnabled = true
+    }
+}
+
+kotlin {
+    // Ensures both Java & Kotlin compile with JDK 17
+    jvmToolchain(17)
+}
+
+dependencies {
+    // --- Compose BOM (aligns compose artifacts; works well with Kotlin 2.0.x) ---
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
+    implementation(composeBom)
+
+    // Compose UI & tooling
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Material3 (Compose)
+    implementation("androidx.compose.material3:material3")
+
+    // Icons
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // Activity + Lifecycle
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.core:core-ktx:1.13.1")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // Networking (optional)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // --- Glance (Home Screen App Widget) ---
+    // Keep to 1.0.0 for maximum stability; provides androidx.glance.unit.dp
+    implementation("androidx.glance:glance:1.0.0")
+    implementation("androidx.glance:glance-appwidget:1.0.0")
+    // (Do NOT add glance-material3 here.)
+
+    // lottie
+    implementation("com.airbnb.android:lottie-compose:6.4.0")      // keep if you already use it
+
+    // Zmanim
+    implementation("com.kosherjava:zmanim:2.5.0")
+
+
+    // If you enabled desugaring above:
+    // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+}
+
+===== END FILE: app/build.gradle.kts =====
+
+===== BEGIN FILE: app/proguard-rules.pro =====
+Size: 750 bytes
+Lines: 20
+SHA256: 56fd960cf225f6ca40f982b13a5dbb0d8bc3dfde13ff76422825c6070d0a1890
+
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+===== END FILE: app/proguard-rules.pro =====
+
+===== BEGIN FILE: app/src/androidTest/java/com/elad/zmanim/ExampleInstrumentedTest.kt =====
+Size: 657 bytes
+Lines: 23
+SHA256: 765de03bc88e262f81892f02f7835c7b9ec5e58e3c7b89c3ac4ac313da2ab84d
+
+package com.elad.zmanim
+
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
+
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.junit.Assert.*
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+@RunWith(AndroidJUnit4::class)
+class ExampleInstrumentedTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals("com.elad.zmanim", appContext.packageName)
+    }
+}
+===== END FILE: app/src/androidTest/java/com/elad/zmanim/ExampleInstrumentedTest.kt =====
+
+===== BEGIN FILE: app/src/main/AndroidManifest.xml =====
+Size: 1053 bytes
+Lines: 28
+SHA256: 5df9118a5a77f4a71bba58764d6029965be1f61e039c484e2077c872f80e98bb
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.elad.zmanim.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name="com.elad.zmanim.widget.ZmanimWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/zmanim_widget_info"/>
+        </receiver>
+
+    </application>
+</manifest>
+
+===== END FILE: app/src/main/AndroidManifest.xml =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/AboutDialog.kt =====
+Size: 1879 bytes
+Lines: 36
+SHA256: abb69cc2d183bfa2160cec49d9462932b2c6c9c89514b9a3829e072c087db4b9
+
+package com.elad.zmanim
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun AboutDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Close") } },
+        title = { Text("About Zmanim & Methods") },
+        text = {
+            Column(Modifier.fillMaxWidth().padding(PaddingValues(top = 4.dp))) {
+                Text(
+                    "- Times are calculated with the KosherJava Zmanim library.\n" +
+                            "- Sha’ah zmanit (halachic hour) can follow GRA (sunrise→sunset) or MGA (alos→tzeit).\n" +
+                            "- Dawn / nightfall (alos / tzeit) can be degree-based (e.g., 11.5°, 16.1°, 18°) or fixed minutes (e.g., 72 min).\n" +
+                            "- Visible vs sea-level sunrise/sunset may differ based on location elevation.\n" +
+                            "- Candle-lighting offset is city/minhag dependent (e.g., 18, 30, 40 min before sunset).\n" +
+                            "- Shabbat card (parasha, candle-lighting, havdalah) uses Hebcal data for the selected city.\n" +
+                            "\nTo match a specific luach exactly, set the Board preset and offsets to that luach’s method (including degrees/minutes and city elevation).",
+                    textAlign = TextAlign.Start
+                )
+            }
+        }
+    )
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/AboutDialog.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/CandleAnim.kt =====
+Size: 6637 bytes
+Lines: 186
+SHA256: 1cb571958119bdf2eee0380720e363e4df58fa8cfbbc7bc8058d4110218d964e
+
+package com.elad.zmanim
+
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import java.time.Duration
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import kotlinx.coroutines.delay
+
+/* Preferred: Lottie JSON from assets
+ * File path: app/src/main/assets/lottie/candle_light.json
+ */
+@Composable
+fun CandleLottieJson(
+    modifier: Modifier = Modifier,
+    assetPath: String = "lottie/candle_light.json"
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset(assetPath))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+    if (composition == null) {
+        AnimatedCandles(modifier = modifier) // fallback if JSON missing
+    } else {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = modifier
+        )
+    }
+}
+
+/** Convenience wrapper to use inside CandleHeaderBox. */
+@Composable
+fun CandleHeaderCandle(
+    modifier: Modifier = Modifier,
+    assetPath: String = "lottie/candle_light.json"
+) {
+    CandleLottieJson(modifier = modifier, assetPath = assetPath)
+}
+
+/** Two side-by-side candles for the header (keeps Lottie/fallback behavior). */
+@Composable
+fun TwoCandles(
+    modifier: Modifier = Modifier,
+    leftAsset: String = "lottie/candle_1.json",
+    rightAsset: String = "lottie/candle_2.json"
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CandleHeaderCandle(
+            modifier = Modifier
+                .size(30.dp)
+                .graphicsLayer { scaleX = 1f },   // 🔒 never mirrored
+            assetPath = leftAsset
+        )
+        CandleHeaderCandle(
+            modifier = Modifier
+                .size(26.dp)
+                .graphicsLayer { scaleX = 1f },   // 🔒 never mirrored
+            assetPath = rightAsset
+        )
+    }
+}
+
+/* ── Original canvas-based animated candles (fallback) ─────────────────────── */
+
+@Composable
+fun AnimatedCandles(modifier: Modifier = Modifier) {
+    val infinite = rememberInfiniteTransition(label = "flame")
+    val a1 by infinite.animateFloat(
+        0.6f, 1.0f,
+        animationSpec = infiniteRepeatable(tween(900, easing = LinearEasing), RepeatMode.Reverse),
+        label = "a1"
+    )
+    val a2 by infinite.animateFloat(
+        1.0f, 0.6f,
+        animationSpec = infiniteRepeatable(tween(1200, easing = LinearEasing), RepeatMode.Reverse),
+        label = "a2"
+    )
+    val bob1 by infinite.animateFloat(
+        0f, 1.2f,
+        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
+        label = "b1"
+    )
+    val bob2 by infinite.animateFloat(
+        1.2f, 0f,
+        animationSpec = infiniteRepeatable(tween(1100), RepeatMode.Reverse),
+        label = "b2"
+    )
+
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        val candleW = w * 0.22f
+        val candleH = h * 0.52f
+        val gap = w * 0.08f
+        val leftX = w / 2 - candleW - gap / 2
+        val rightX = w / 2 + gap / 2
+        val baseY = h * 0.82f
+
+        fun body(x: Float, height: Float, color: Color) {
+            drawRoundRect(
+                color = color,
+                topLeft = androidx.compose.ui.geometry.Offset(x, baseY - height),
+                size = androidx.compose.ui.geometry.Size(candleW, height),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(candleW * 0.2f, candleW * 0.2f)
+            )
+        }
+        body(leftX, candleH, Color(0xFFFFF8E1))
+        body(rightX, candleH * 0.85f, Color(0xFFFFFDE7))
+
+        translate(leftX + candleW / 2, baseY - candleH - 5f + bob1) { drawFlame(a1) }
+        translate(rightX + candleW / 2, baseY - candleH * 0.85f - 5f + bob2) { drawFlame(a2) }
+    }
+}
+
+private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawFlame(alpha: Float) {
+    drawCircle(color = Color(0xFFFFECB3), radius = 10f, alpha = 0.5f * alpha)
+    drawCircle(color = Color(0xFFFFC107), radius = 5f, alpha = alpha)
+}
+
+/* ── Countdown utilities (unchanged) ──────────────────────────────────────── */
+
+@Composable
+fun countdownLine(tz: ZoneId, target: ZonedDateTime?): String {
+    val now = remember { mutableStateOf(ZonedDateTime.now(tz)) }
+    LaunchedEffect(target?.toInstant(), tz) {
+        while (true) {
+            now.value = ZonedDateTime.now(tz)
+            delay(1000)
+        }
+    }
+    if (target == null) return "—"
+    val remaining = Duration.between(now.value, target)
+    if (remaining.isNegative) return "שבת שלום!"
+
+    var secs = remaining.seconds
+    val days = (secs / 86_400).toInt(); secs %= 86_400
+    val hours = (secs / 3600).toInt(); secs %= 3600
+    val minutes = (secs / 60).toInt()
+    val seconds = (secs % 60).toInt()
+
+    val prefix = if (days > 0) "$days ימים " else ""
+    val base = "%02d:%02d:%02d".format(hours, minutes, seconds)
+
+    val unitLabel = when {
+        hours > 0 -> "שעות"
+        minutes > 0 -> "דקות"
+        else -> "שניות"
+    }
+
+    return "$prefix$base $unitLabel"
+}
+
+fun isNegative(tz: ZoneId, target: ZonedDateTime): Boolean {
+    return Duration.between(ZonedDateTime.now(tz), target).isNegative
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/CandleAnim.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/Cities.kt =====
+Size: 1078 bytes
+Lines: 25
+SHA256: 5fc7a557bcd4bdfe9c6d89e62f81784bc55f16791bbca843410b4ffc535b80f0
+
+package com.elad.zmanim
+
+/** City/location model used across MainActivity, TopBar, and ShabbatRepository. */
+data class City(
+    val display: String,
+    val lat: Double,
+    val lon: Double,
+    val tzid: String = "Asia/Jerusalem",
+    val defaultCandleOffsetMin: Int = 18,
+    val elevationMeters: Double = 0.0
+)
+
+/** Starter list — tweak/add cities as you like. */
+object Cities {
+    val all = listOf(
+        City("הוד השרון", 32.1559, 34.8880, elevationMeters = 45.0),
+        City("רעננה",     32.1848, 34.8713, elevationMeters = 55.0),
+        City("תל אביב",   32.0853, 34.7818, elevationMeters = 15.0),
+        City("ירושלים",   31.7683, 35.2137, defaultCandleOffsetMin = 40, elevationMeters = 800.0),
+        City("חיפה",      32.7940, 34.9896, defaultCandleOffsetMin = 30, elevationMeters = 280.0),
+        City("באר שבע",   31.2520, 34.7915, elevationMeters = 300.0),
+        City("פתח תקווה", 32.0917, 34.8850, elevationMeters = 40.0),
+        City("נתניה",     32.3215, 34.8532, elevationMeters = 20.0)
+    )
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/Cities.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/DebugLog.kt =====
+Size: 214 bytes
+Lines: 9
+SHA256: 20354cb1fb53accd7ab330d7a6b4ff3f1ce3fd716867a9e8e3747a7436c12f76
+
+package com.elad.zmanim
+
+import android.util.Log
+
+object DebugLog {
+    private const val TAG = "Zmanim"
+    fun d(msg: String) = Log.d(TAG, msg)
+    fun e(msg: String, t: Throwable? = null) = Log.e(TAG, msg, t)
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/DebugLog.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/HebrewUtils.kt =====
+Size: 1527 bytes
+Lines: 42
+SHA256: 1a5a73514749c26e4c7182b65538ad7783af3ac707a515711a93645a1dada386
+
+package com.elad.zmanim
+
+import com.kosherjava.zmanim.hebrewcalendar.HebrewDateFormatter
+import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.util.Calendar
+import java.util.GregorianCalendar
+
+/** Returns Hebrew date string (e.g., י"ג באלול ה'תשפ"ה) for a Gregorian LocalDate */
+fun hebrewDateFor(localDate: LocalDate, inIsrael: Boolean = true): String {
+    val cal: Calendar = newGregorian(localDate.year, localDate.monthValue - 1, localDate.dayOfMonth)
+    val jc = JewishCalendar().apply {
+        this.inIsrael = inIsrael
+        setDate(cal)
+    }
+    val fmt = HebrewDateFormatter().apply {
+        isHebrewFormat = true
+        isUseGershGershayim = true
+    }
+    return fmt.format(jc)
+}
+
+/** Finds the next Shabbat (Saturday) date on/after 'from'. */
+fun nextShabbat(from: LocalDate = LocalDate.now()): LocalDate {
+    var d = from
+    while (d.dayOfWeek != DayOfWeek.SATURDAY) d = d.plusDays(1)
+    return d
+}
+
+/** Simple helper to make a GregorianCalendar without extension hacks. */
+private fun newGregorian(year: Int, monthZeroBased: Int, day: Int): GregorianCalendar {
+    return GregorianCalendar().apply {
+        set(Calendar.YEAR, year)
+        set(Calendar.MONTH, monthZeroBased)     // 0-based
+        set(Calendar.DAY_OF_MONTH, day)
+        set(Calendar.HOUR_OF_DAY, 12)           // noon avoids DST edge effects
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/HebrewUtils.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/MainActivity.kt =====
+Size: 14711 bytes
+Lines: 371
+SHA256: 1dc1a0907834411f3de02a295f0555a50a528e793ffdf637648e981311b9f6d2
+
+package com.elad.zmanim
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent { ZmanimApp() }
+    }
+}
+
+private val HHMM: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@Composable
+fun ZmanimApp() {
+
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        var offset by remember { mutableStateOf(0) }
+        var selectedCity by remember { mutableStateOf(Cities.all.first()) }
+        var settings by remember { mutableStateOf(AppSettings(board = BoardPreset.GRA)) }
+        var selectedTab by remember { mutableStateOf(0) } // 0=זמני היום, 1=זמני שבת, 2=סיפור לשבת
+
+        val tz = ZoneId.of(selectedCity.tzid)
+        val date = LocalDate.now(tz).plusDays(offset.toLong())
+
+        // Include board in the key so recomputation happens when changing method.
+        val z = remember(date, selectedCity, settings.board) {
+            ZmanimProvider.computeAll(
+                date,
+                selectedCity.lat,
+                selectedCity.lon,
+                tz,
+                selectedCity.elevationMeters
+            )
+        }
+
+        var shabbat by remember { mutableStateOf<ShabbatSummary?>(null) }
+        LaunchedEffect(selectedCity, settings.candleOffsetMinutes) {
+            shabbat = ShabbatRepository.fetchUpcoming(selectedCity, tz, settings.candleOffsetMinutes)
+        }
+
+        val nextShabbatDate = remember(tz) { nextShabbat(LocalDate.now(tz)) }
+        val rt72FromZmanim: ZonedDateTime? = remember(selectedCity, nextShabbatDate) {
+            runCatching {
+                val r = ZmanimProvider.computeAll(nextShabbatDate, selectedCity.lat, selectedCity.lon, tz)
+                r.tzeitRT72?.atDate(nextShabbatDate)?.atZone(tz)
+            }.getOrNull()
+        }
+
+        val gradient = Brush.verticalGradient(
+            colors = listOf(Color(0xFF0D47A1), Color(0xFF1976D2), Color(0xFF42A5F5)),
+            startY = 0f, endY = 1200f
+        )
+
+        LaunchedEffect(selectedCity, date) {
+            logMisheyakirFor(
+                date = date,
+                lat = selectedCity.lat,
+                lon = selectedCity.lon,
+                tz = ZoneId.of(selectedCity.tzid),
+                elevationMeters = selectedCity.elevationMeters
+            )
+        }
+
+        Scaffold(
+            bottomBar = {
+                BottomAppBar {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // back (previous day)
+                        IconButton(onClick = { offset-- }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "יום לפני")
+                        }
+                        // today (center)
+                        FilledTonalButton(onClick = { offset = 0 }) {
+                            Text("היום")
+                        }
+                        // forward (next day)
+                        IconButton(onClick = { offset++ }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "יום הבא")
+                        }
+                    }
+                }
+            }
+        ) { padding ->
+            Box(
+                Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .background(gradient)
+                    .padding(12.dp)
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = RoundedCornerShape(24.dp),
+                    tonalElevation = 6.dp,
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)
+                ) {
+                    AnimatedContent(
+                        targetState = Triple(date, selectedCity, settings.board),
+                        transitionSpec = {
+                            (fadeIn(animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy)) togetherWith
+                                    fadeOut(animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy)))
+                        },
+                        label = "date-city-board"
+                    ) { (d, city, board) ->
+                        Column(Modifier.fillMaxSize().padding(12.dp)) {
+
+                            CandleHeaderBox(
+                                candleLighting = shabbat?.candleLighting,
+                                tz = tz,
+                                city = city
+
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            ControlsBox(
+                                city = city,
+                                onCityChange = { selectedCity = it },
+                                board = board,
+                                onBoardChange = { settings = settings.copy(board = it) }
+                            )
+
+                            Spacer(Modifier.height(10.dp))
+
+                            // Tabs: Times of Day / Shabbat / Story
+                            TabRow(selectedTabIndex = selectedTab) {
+                                Tab(
+                                    selected = selectedTab == 0,
+                                    onClick = { selectedTab = 0 },
+                                    text = { Text("זמני היום") }
+                                )
+                                Tab(
+                                    selected = selectedTab == 1,
+                                    onClick = { selectedTab = 1 },
+                                    text = { Text("זמני שבת") }
+                                )
+                                Tab(
+                                    selected = selectedTab == 2,
+                                    onClick = { selectedTab = 2 },
+                                    text = { Text("סיפור לשבת") }
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            when (selectedTab) {
+                                0 -> TimesOfDayCard(
+                                    date = d,
+                                    tz = tz,
+                                    z = z,
+                                    board = board,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                1 -> ShabbatCard(
+                                    summary = shabbat,
+                                    tz = tz,
+                                    rt72FromZmanim = rt72FromZmanim
+                                )
+                                2 -> StoryCard(
+                                    tz = tz
+                                    // , remoteUrlTemplate = "https://example.com/stories/{key}.txt"
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CandleHeaderBox(candleLighting: ZonedDateTime?, tz: ZoneId, city: City) {
+    val headerGrad = Brush.horizontalGradient(listOf(Color(0xFFE3F2FD), Color(0xFFBBDEFB)))
+
+    Surface(
+        tonalElevation = 1.dp,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(headerGrad)
+                .padding(horizontal = 10.dp, vertical = 6.dp)
+                .fillMaxWidth()
+        ) {
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "הדלקת נרות שבת קודש בעוד:",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                    textAlign = TextAlign.Right,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                val line = countdownLine(tz, candleLighting)
+                Text(
+                    line,
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Right,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (candleLighting != null && !isNegative(tz, candleLighting)) {
+                    Text(
+                        "${city.display}, ${candleLighting.format(HHMM)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ControlsBox(
+    city: City,
+    onCityChange: (City) -> Unit,
+    board: BoardPreset,
+    onBoardChange: (BoardPreset) -> Unit
+) {
+    Surface(
+        tonalElevation = 1.dp,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            CityDropdown(city = city, onCityChange = onCityChange)
+            BoardDropdown(board = board, onBoardChange = onBoardChange)
+        }
+    }
+}
+
+@Composable
+fun TimesOfDayCard(
+    date: LocalDate,
+    tz: ZoneId,
+    z: ZmanResults,
+    board: BoardPreset,
+    modifier: Modifier = Modifier
+) {
+    val hebText = remember(date) { hebrewDateFor(date, inIsrael = true) }
+    val gregText = remember(date) { date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            Modifier
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                "זמני היום",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                textAlign = TextAlign.Right,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                hebText,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Right,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                gregText,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Right,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+
+            ZRow("עלות השחר", z.alosHashachar)
+            ZRow("זמן טלית ותפילין", z.misheyakir11_5)
+            ZRow("זריחה מישורית", z.sunriseSeaLevel)
+            ZRow("זריחה הנראית", z.sunriseVisible)
+
+            Spacer(Modifier.height(6.dp))
+
+            val isMGA = board == BoardPreset.MGA
+            val isGRA = board == BoardPreset.GRA
+
+            ZRow("סו\"ז ק\"ש מג\"א", z.sofZmanShmaMGA, selected = isMGA)
+            ZRow("סו\"ז ק\"ש גרא", z.sofZmanShmaGRA, selected = isGRA)
+            ZRow("סו\"ז תפילה מג\"א", z.sofZmanTfilaMGA, selected = isMGA)
+            ZRow("סו\"ז תפילה גרא", z.sofZmanTfilaGRA, selected = isGRA)
+
+            Spacer(Modifier.height(6.dp))
+            ZRow("חצות היום", z.chatzot)
+            ZRow("מנחה גדולה", z.minchaGedola)
+            ZRow("מנחה קטנה", z.minchaKetana)
+            ZRow("פלג המנחה", z.plagHamincha)
+            Spacer(Modifier.height(6.dp))
+            ZRow("שקיעה מישורית", z.sunsetSeaLevel)
+            ZRow("שקיעה הנראית", z.sunsetVisible)
+            ZRow("צאת הכוכבים", z.tzeitStandard)
+            ZRow("צאת הכוכבים לרבנו תם", z.tzeitRT72)
+        }
+    }
+}
+
+@Composable
+private fun ZRow(label: String, time: LocalTime?, selected: Boolean = false) {
+    val timeText = time?.format(HHMM) ?: "--"
+    val base = MaterialTheme.typography.bodyLarge
+    val style = if (selected) base.copy(fontWeight = FontWeight.SemiBold) else base
+    Text(
+        text = "$label: $timeText",
+        style = style,
+        textAlign = TextAlign.Right,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    )
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/MainActivity.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/MisheyakirProbe.kt =====
+Size: 1765 bytes
+Lines: 48
+SHA256: 4820fc69d00afcd31494f531476a00c8074a94f11cd5d56d306a66fd0c794b18
+
+package com.elad.zmanim
+
+import android.util.Log
+import com.kosherjava.zmanim.ComplexZmanimCalendar
+import com.kosherjava.zmanim.util.GeoLocation
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.GregorianCalendar
+import java.util.TimeZone
+
+private val HHMM = DateTimeFormatter.ofPattern("HH:mm")
+
+/**
+ * Minimal logger to inspect KosherJava Misheyakir variants for a given city/date.
+ * Works with com.kosherjava.zmanim.*
+ */
+fun logMisheyakirFor(
+    date: LocalDate,
+    lat: Double,
+    lon: Double,
+    tz: ZoneId,
+    elevationMeters: Double = 0.0,
+    tag: String = "MisheyakirProbe"
+) {
+    // IMPORTANT: com.kosherjava.zmanim.util.GeoLocation expects a TimeZone, not a tz ID string.
+    val tzOld: TimeZone = TimeZone.getTimeZone(tz)
+    val geo = GeoLocation("probe", lat, lon, elevationMeters, tzOld)
+    val czc = ComplexZmanimCalendar(geo)
+
+    // Set calendar to the given local date (midnight)
+    val cal = GregorianCalendar(tzOld)
+    cal.time = Date.from(date.atStartOfDay(tz).toInstant())
+    czc.calendar = cal
+
+    fun fmt(d: Date?): String =
+        d?.toInstant()?.atZone(tz)?.toLocalTime()?.format(HHMM) ?: "--"
+
+    Log.d(tag, "---- $date @ ($lat,$lon) tz=${tz.id} elev=${elevationMeters}m ----")
+    Log.d(tag, "misheyakir11.5  : ${fmt(czc.getMisheyakir11Point5Degrees())}")
+    Log.d(tag, "misheyakir10.2  : ${fmt(czc.getMisheyakir10Point2Degrees())}")
+    Log.d(tag, "misheyakir9.5   : ${fmt(czc.getMisheyakir9Point5Degrees())}")
+    Log.d(tag, "misheyakir7.65  : ${fmt(czc.getMisheyakir7Point65Degrees())}")
+    // Optional context
+    Log.d(tag, "alos             : ${fmt(czc.alosHashachar)}")
+    Log.d(tag, "sunrise (visible): ${fmt(czc.sunrise)}")
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/MisheyakirProbe.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/Settings.kt =====
+Size: 428 bytes
+Lines: 15
+SHA256: bd876317cc8caf3651d1b57b08a1c2ef78e0cd7e02ee1ce3ba19f794c0d08382
+
+package com.elad.zmanim
+
+/** Which calculation 'board' the user selected; shown in UI */
+enum class BoardPreset(val display: String) {
+    GRA("גר״א"),
+    MGA("מג״א"),
+    OR_HACHAIM("אור החיים"),
+    RABEINU_TAM("רבנו תם"),
+    CUSTOM("מותאם אישית")
+}
+
+data class AppSettings(
+    val board: BoardPreset = BoardPreset.GRA,
+    val candleOffsetMinutes: Int? = null // null => use city default
+)
+
+===== END FILE: app/src/main/java/com/elad/zmanim/Settings.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ShabbatCard.kt =====
+Size: 3879 bytes
+Lines: 89
+SHA256: 2f9f010fc98cde72440371ea9f123ff2668face0a2e58d15d43c41619ca16db1
+
+package com.elad.zmanim
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+private val HHMM = DateTimeFormatter.ofPattern("HH:mm")
+private val DDMMYYYY = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+@Composable
+fun ShabbatCard(
+    summary: ShabbatSummary?,
+    tz: ZoneId,
+    rt72FromZmanim: ZonedDateTime? = null
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    "זמני שבת קודש",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                    textAlign = TextAlign.Right,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            if (summary == null) {
+                Text("…טוען נתוני שבת", textAlign = TextAlign.Right, modifier = Modifier.fillMaxWidth())
+            } else {
+                Text(
+                    "${summary.hebrewDate} • ${summary.gregDate.format(DDMMYYYY)}",
+                    textAlign = TextAlign.Right,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                summary.parashaHeb?.let {
+                    Spacer(Modifier.height(4.dp))
+                    Text("פרשת השבוע: $it", textAlign = TextAlign.Right, modifier = Modifier.fillMaxWidth())
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("הדלקת נרות", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            summary.candleLighting?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("צאת השבת", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            summary.havdalah?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        Text("צאת ר״ת", fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Right)
+                        Text(
+                            rt72FromZmanim?.format(HHMM) ?: "--",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/ShabbatCard.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ShabbatRepository.kt =====
+Size: 3611 bytes
+Lines: 92
+SHA256: b01444ebbff14f6ec50b5284e3ccf1f353baf64b6c9c7032956326cb10d00a3f
+
+package com.elad.zmanim
+
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+data class ShabbatSummary(
+    val cityDisplay: String,
+    val gregDate: LocalDate,        // Shabbat day (Saturday)
+    val hebrewDate: String,         // formatted Hebrew date for Saturday
+    val parashaHeb: String?,        // פרשת השבוע (Hebrew)
+    val candleLighting: ZonedDateTime?,
+    val havdalah: ZonedDateTime?,
+    val havdalahRT72: ZonedDateTime? // optional; can be computed via local zmanim if desired
+)
+
+object ShabbatRepository {
+    private val client = OkHttpClient()
+    private val ISO_OFFSET: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
+    /**
+     * Fetch upcoming Shabbat info from Hebcal for the given city/offset.
+     * Params: cfg=json, lg=he, M=on (8.5° Havdalah), b=<minutes>, lat/lon/tzid
+     */
+    suspend fun fetchUpcoming(
+        city: City,
+        tz: ZoneId,
+        candleOffsetMin: Int? = null
+    ): ShabbatSummary? = withContext(Dispatchers.IO) {
+        try {
+            val b = (candleOffsetMin ?: city.defaultCandleOffsetMin).coerceAtLeast(0)
+            val url = "https://www.hebcal.com/shabbat?cfg=json&lg=he&M=on&b=$b" +
+                    "&latitude=${city.lat}&longitude=${city.lon}&tzid=${city.tzid}"
+
+            val req = Request.Builder().url(url).get().build()
+            client.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) {
+                    Log.e("Zmanim", "Shabbat API HTTP ${resp.code}")
+                    return@withContext null
+                }
+                val root = JSONObject(resp.body?.string() ?: return@withContext null)
+                val items = root.optJSONArray("items") ?: return@withContext null
+
+                var candle: ZonedDateTime? = null
+                var havdalah: ZonedDateTime? = null
+                var parashaHeb: String? = null
+
+                for (i in 0 until items.length()) {
+                    val it = items.getJSONObject(i)
+                    when (it.optString("category")) {
+                        "candles"  -> candle   = parseZoned(it.optString("date", null), tz)
+                        "havdalah" -> havdalah = parseZoned(it.optString("date", null), tz)
+                        "parashat" -> parashaHeb = it.optString("hebrew", null)
+                    }
+                }
+
+                val shabbatDate = nextShabbat(LocalDate.now(tz))
+                val heb = hebrewDateFor(shabbatDate, inIsrael = true)
+
+                ShabbatSummary(
+                    cityDisplay = city.display,
+                    gregDate = shabbatDate,
+                    hebrewDate = heb,
+                    parashaHeb = parashaHeb,
+                    candleLighting = candle,
+                    havdalah = havdalah,
+                    havdalahRT72 = null // (optional) compute locally from zmanim if you want exact RT72
+                )
+            }
+        } catch (t: Throwable) {
+            Log.e("Zmanim", "Shabbat API failure", t)
+            null
+        }
+    }
+
+    private fun parseZoned(iso: String?, tz: ZoneId): ZonedDateTime? {
+        if (iso.isNullOrBlank()) return null
+        return try {
+            // Hebcal example: 2025-09-05T18:40:00+03:00
+            ZonedDateTime.parse(iso, ISO_OFFSET).withZoneSameInstant(tz)
+        } catch (_: Throwable) {
+            null
+        }
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/ShabbatRepository.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/StoryCard.kt =====
+Size: 2954 bytes
+Lines: 76
+SHA256: ffdb8e7bc8871ec84e8a5adefc52bb2129515c8193b50e6a391f32a3fe04cfe6
+
+package com.elad.zmanim
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import java.time.ZoneId
+
+@Composable
+fun StoryCard(tz: ZoneId, remoteUrlTemplate: String? = null) {
+    val ctx = LocalContext.current
+    var story by remember { mutableStateOf<ShabbatStory?>(null) }
+    var loading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(tz, remoteUrlTemplate) {
+        loading = true
+        story = StoryRepository.fetchWeeklyStory(
+            context = ctx,
+            tz = tz,
+            useIsoWeek = true,
+            remoteUrl = remoteUrlTemplate
+        )
+        loading = false
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                "סיפור לשבת",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                textAlign = TextAlign.Right,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+
+            when {
+                loading -> Text("…טוען סיפור", textAlign = TextAlign.Right, modifier = Modifier.fillMaxWidth())
+                story == null -> Text("לא נמצא סיפור לשבוע זה", textAlign = TextAlign.Right, modifier = Modifier.fillMaxWidth())
+                else -> {
+                    Text(
+                        story!!.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        story!!.body,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "מקור: ${story!!.source}",
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/StoryCard.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/StoryRepository.kt =====
+Size: 2999 bytes
+Lines: 91
+SHA256: 0edc37ba918b374ec5d91925049303b7be3f74f5f9ef1da517829b0ee4cf9317
+
+package com.elad.zmanim
+
+import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.FileNotFoundException
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
+import java.util.Locale
+
+data class ShabbatStory(
+    val title: String,
+    val body: String,
+    val source: String // "local:<key>" or "remote:<url>"
+)
+
+object StoryRepository {
+    private val client by lazy { OkHttpClient() }
+
+    suspend fun fetchWeeklyStory(
+        context: Context,
+        tz: ZoneId,
+        useIsoWeek: Boolean = true,
+        remoteUrl: String? = null // "https://example.com/stories/{key}.txt"
+    ): ShabbatStory? = withContext(Dispatchers.IO) {
+        val shabbat = nextShabbat(LocalDate.now(tz))
+        val key = if (useIsoWeek) isoWeekKey(shabbat) else dateKey(shabbat)
+
+        readAsset(context, "stories/$key.txt")?.let { txt ->
+            return@withContext parseStory(txt, source = "local:$key")
+        }
+
+        if (!remoteUrl.isNullOrBlank() && remoteUrl.contains("{key}")) {
+            val url = remoteUrl.replace("{key}", key)
+            download(url)?.let { txt ->
+                return@withContext parseStory(txt, source = "remote:$url")
+            }
+        }
+
+        null
+    }
+
+    private fun isoWeekKey(date: LocalDate): String {
+        val wf = WeekFields.of(Locale.getDefault())
+        val week = date.get(wf.weekOfWeekBasedYear())
+        val year = date.get(wf.weekBasedYear())
+        return "%04d-W%02d".format(year, week)
+    }
+
+    private fun dateKey(date: LocalDate): String = date.format(DateTimeFormatter.ISO_DATE)
+
+    private fun readAsset(context: Context, path: String): String? {
+        return try {
+            context.assets.open(path).bufferedReader().use { it.readText() }
+        } catch (_: FileNotFoundException) {
+            null
+        } catch (t: Throwable) {
+            DebugLog.e("readAsset failed: $path", t); null
+        }
+    }
+
+    private fun download(url: String): String? {
+        return try {
+            val req = Request.Builder().url(url).get().build()
+            client.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) return null
+                resp.body?.string()
+            }
+        } catch (t: Throwable) {
+            DebugLog.e("download story failed: $url", t); null
+        }
+    }
+
+    private fun parseStory(raw: String, source: String): ShabbatStory {
+        val lines = raw.lines()
+        val first = lines.firstOrNull { it.isNotBlank() }?.trim().orEmpty()
+        val body = lines.dropWhile { it.isBlank() }
+            .drop(1)
+            .joinToString("\n")
+            .trim()
+        return ShabbatStory(
+            title = if (first.isBlank()) "סיפור לשבת" else first,
+            body = if (body.isBlank()) raw.trim() else body,
+            source = source
+        )
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/StoryRepository.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/TopBar.kt =====
+Size: 6518 bytes
+Lines: 167
+SHA256: 6804e5e469c3b47ed663663de06f41ee3c4093c3c7ecac20dc4da8dc912b97cb
+
+package com.elad.zmanim
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+private val DDMMYYYY = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+@Composable
+fun ShabbatTopBar(
+    board: BoardPreset,
+    onBoardChange: (BoardPreset) -> Unit,
+    city: City,
+    onCityChange: (City) -> Unit,
+    date: LocalDate,
+    tz: ZoneId,
+    candleLighting: ZonedDateTime?,
+    onAbout: () -> Unit = {}
+) {
+    val headerGrad = Brush.verticalGradient(listOf(Color(0xFFFFF7E6), Color(0xFFFFECB3)))
+
+    Surface(
+        tonalElevation = 1.dp,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(headerGrad)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(Color(0xFFFFE082), Color(0xFFFFD54F))
+                        )
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                AnimatedCandles(modifier = Modifier.size(26.dp))
+                Spacer(Modifier.width(6.dp))
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier.fillMaxWidth() // ✅ fix: stretch column
+                ) {
+                    Text(
+                        "זמן עד הדלקת נרות",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    val line = countdownLine(tz, candleLighting)
+                    Text(
+                        line,
+                        style = MaterialTheme.typography.titleSmall,
+                        textAlign = TextAlign.Right,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (candleLighting != null && !isNegative(tz, candleLighting)) {
+                        Text(
+                            "(${candleLighting.format(DateTimeFormatter.ofPattern("HH:mm"))})",
+                            style = MaterialTheme.typography.labelSmall,
+                            textAlign = TextAlign.Right,
+                            modifier = Modifier.fillMaxWidth().alpha(0.85f)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(4.dp))
+
+            // Row 2: controls + dates + about
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        BoardDropdown(board = board, onBoardChange = onBoardChange)
+                        CityDropdown(city = city, onCityChange = onCityChange)
+                    }
+                }
+
+                val hebText = remember(date) { hebrewDateFor(date, inIsrael = true) }
+                val gregText = remember(date) { date.format(DDMMYYYY) }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(hebText, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+                    Text(gregText, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.alpha(0.9f))
+                }
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = onAbout,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    ) { Text("About") }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BoardDropdown(
+    board: BoardPreset,
+    onBoardChange: (BoardPreset) -> Unit
+) {
+    var open by remember { mutableStateOf(false) }
+    TextButton(
+        onClick = { open = true },
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+    ) { Text("שיטה: ${board.display}") }
+    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        BoardPreset.values().forEach { b ->
+            DropdownMenuItem(text = { Text(b.display) }, onClick = { onBoardChange(b); open = false })
+        }
+    }
+}
+
+@Composable
+fun CityDropdown(
+    city: City,
+    onCityChange: (City) -> Unit
+) {
+    var open by remember { mutableStateOf(false) }
+    TextButton(
+        onClick = { open = true },
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+    ) { Text("עיר: ${city.display}") }
+    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+        Cities.all.forEach { c ->
+            DropdownMenuItem(text = { Text(c.display) }, onClick = { onCityChange(c); open = false })
+        }
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/TopBar.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ZmanimProvider.kt =====
+Size: 7955 bytes
+Lines: 180
+SHA256: aa6555bbeeb4c26766b3eb3c9bb881d752d3395adea33e6f1f11fe6d19b40f54
+
+package com.elad.zmanim
+
+import com.kosherjava.zmanim.ComplexZmanimCalendar
+import com.kosherjava.zmanim.util.GeoLocation
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.TimeZone
+
+data class ZmanResults(
+    val date: LocalDate,
+
+    // Morning
+    val alosHashachar: LocalTime?,       // עלות השחר
+    val misheyakir11_5: LocalTime?,      // משיכיר ~11.5°, "זמן טלית ותפילין"
+    val misheyakir10_2: LocalTime?,      // משיכיר ~10.2°
+    val misheyakir9_5: LocalTime?,       // משיכיר ~9.5°
+    val misheyakir7_65: LocalTime?,      // משיכיר ~7.65°
+
+    // Sunrise: sea-level vs visible
+    val sunriseSeaLevel: LocalTime?,     // זריחה מישורית (גובה פני הים)
+    val sunriseVisible: LocalTime?,      // זריחה הנראית (ברירת מחדל ספרייה)
+
+    // Latest times (GRA/MGA)
+    val sofZmanShmaMGA: LocalTime?,      // סוף זמן ק"ש מג"א
+    val sofZmanShmaGRA: LocalTime?,      // סוף זמן ק"ש גר"א
+    val sofZmanTfilaMGA: LocalTime?,     // סוף זמן תפילה מג"א
+    val sofZmanTfilaGRA: LocalTime?,     // סוף זמן תפילה גר"א
+
+    // Midday / afternoon
+    val chatzot: LocalTime?,             // חצות היום
+    val minchaGedola: LocalTime?,        // תחילת זמן מנחה גדולה
+    val minchaKetana: LocalTime?,        // מנחה קטנה
+    val plagHamincha: LocalTime?,        // פלג המנחה
+
+    // Sunset: sea-level vs visible
+    val sunsetSeaLevel: LocalTime?,      // שקיעה מישורית
+    val sunsetVisible: LocalTime?,       // שקיעה הנראית
+
+    // Nightfall
+    val tzeitStandard: LocalTime?,       // צאת הכוכבים (סטנדרטי)
+    val tzeitRT72: LocalTime?            // צאת הכוכבים לרבנו תם (~72 דק')
+)
+
+object ZmanimProvider {
+
+    private val HHMM: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    fun LocalTime?.fmt(): String = this?.format(HHMM) ?: "--"
+
+    private fun toLocalTime(d: java.util.Date?, tz: ZoneId): LocalTime? =
+        d?.toInstant()?.atZone(tz)?.toLocalTime()
+
+    /** Build a ComplexZmanimCalendar for a given date/lat/lon/tz and elevation (meters). */
+    private fun czcFor(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        tz: ZoneId,
+        elevationMeters: Double
+    ): ComplexZmanimCalendar {
+        val tzOld: TimeZone = TimeZone.getTimeZone(tz)
+        val geo = GeoLocation("Location", lat, lon, elevationMeters, tzOld)
+        val czc = ComplexZmanimCalendar(geo)
+        val cal: Calendar = Calendar.getInstance(tzOld).apply {
+            set(Calendar.YEAR, date.year)
+            set(Calendar.MONTH, date.monthValue - 1) // Calendar is 0-based month
+            set(Calendar.DAY_OF_MONTH, date.dayOfMonth)
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        czc.calendar = cal
+        return czc
+    }
+
+    /**
+     * Compute a rich set of zmanim:
+     * - uses "visible" sunrise/sunset from the default calendar (observer at given elevation; we’ll pass 0 in the app)
+     * - computes "sea-level" sunrise/sunset by re-evaluating with elevation=0
+     * - Misheyakir variants (11.5°, 10.2°, 9.5°, 7.65°)
+     * - GRA/MGA cutoffs, chatzot, mincha times, plag, tzeit (standard) and RT (72)
+     */
+    fun computeAll(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        tz: ZoneId,
+        observerElevationMeters: Double = 0.0 // keep 0 for most cities
+    ): ZmanResults {
+        val czcVisible = czcFor(date, lat, lon, tz, observerElevationMeters)
+        val czcSea     = czcFor(date, lat, lon, tz, 0.0)
+
+        DebugLog.d("ComputeAll $date @ ($lat,$lon) tz=$tz elev=$observerElevationMeters")
+
+        // Morning
+        val alos             = toLocalTime(czcVisible.alosHashachar, tz)
+        val misheyakir11_5   = toLocalTime(czcVisible.getMisheyakir11Point5Degrees(), tz)
+        val misheyakir10_2   = toLocalTime(czcVisible.getMisheyakir10Point2Degrees(), tz)
+        val misheyakir9_5    = toLocalTime(czcVisible.getMisheyakir9Point5Degrees(), tz)
+        val misheyakir7_65   = toLocalTime(czcVisible.getMisheyakir7Point65Degrees(), tz)
+
+        // Sunrise (sea-level vs visible)
+        val sunriseSea       = toLocalTime(czcSea.sunrise, tz)
+        val sunriseVis       = toLocalTime(czcVisible.sunrise, tz)
+
+        // Latest times (GRA/MGA)
+        val shmaMGA          = toLocalTime(czcVisible.sofZmanShmaMGA, tz)
+        val shmaGRA          = toLocalTime(czcVisible.sofZmanShmaGRA, tz)
+        val tfilaMGA         = toLocalTime(czcVisible.sofZmanTfilaMGA, tz)
+        val tfilaGRA         = toLocalTime(czcVisible.sofZmanTfilaGRA, tz)
+
+        // Midday / afternoon
+        val chatzot          = toLocalTime(czcVisible.chatzos, tz)
+        val minGedola        = toLocalTime(czcVisible.minchaGedola, tz)
+        val minKetana        = toLocalTime(czcVisible.minchaKetana, tz)
+        val plag             = toLocalTime(czcVisible.plagHamincha, tz)
+
+        // Sunset (sea-level vs visible)
+        val sunsetSea        = toLocalTime(czcSea.sunset, tz)
+        val sunsetVis        = toLocalTime(czcVisible.sunset, tz)
+
+        // Nightfall
+        val tzeitStd         = toLocalTime(czcVisible.tzais, tz)
+        val tzeitRT72        = toLocalTime(czcVisible.tzais72, tz)
+
+        return ZmanResults(
+            date = date,
+            alosHashachar = alos,
+            misheyakir11_5 = misheyakir11_5,
+            misheyakir10_2 = misheyakir10_2,
+            misheyakir9_5 = misheyakir9_5,
+            misheyakir7_65 = misheyakir7_65,
+            sunriseSeaLevel = sunriseSea,
+            sunriseVisible = sunriseVis,
+            sofZmanShmaMGA = shmaMGA,
+            sofZmanShmaGRA = shmaGRA,
+            sofZmanTfilaMGA = tfilaMGA,
+            sofZmanTfilaGRA = tfilaGRA,
+            chatzot = chatzot,
+            minchaGedola = minGedola,
+            minchaKetana = minKetana,
+            plagHamincha = plag,
+            sunsetSeaLevel = sunsetSea,
+            sunsetVisible = sunsetVis,
+            tzeitStandard = tzeitStd,
+            tzeitRT72 = tzeitRT72
+        )
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Optional: quick logger to inspect values in Logcat (no UI impact)
+    // Call it from a LaunchedEffect(selectedCity,date) if you want to see values.
+    fun logMisheyakirFor(
+        date: LocalDate,
+        lat: Double,
+        lon: Double,
+        tz: ZoneId,
+        elevationMeters: Double = 0.0,
+        tag: String = "MisheyakirProbe"
+    ) {
+        try {
+            val czc = czcFor(date, lat, lon, tz, elevationMeters)
+            fun fmt(d: java.util.Date?) =
+                d?.toInstant()?.atZone(tz)?.toLocalTime()?.format(HHMM) ?: "--"
+
+            android.util.Log.d(tag, "---- $date @ ($lat,$lon) tz=${tz.id} elev=${elevationMeters}m ----")
+            android.util.Log.d(tag, "misheyakir11.5 : ${fmt(czc.getMisheyakir11Point5Degrees())}")
+            android.util.Log.d(tag, "misheyakir10.2 : ${fmt(czc.getMisheyakir10Point2Degrees())}")
+            android.util.Log.d(tag, "misheyakir9.5  : ${fmt(czc.getMisheyakir9Point5Degrees())}")
+            android.util.Log.d(tag, "misheyakir7.65 : ${fmt(czc.getMisheyakir7Point65Degrees())}")
+            android.util.Log.d(tag, "alos           : ${fmt(czc.alosHashachar)}")
+            android.util.Log.d(tag, "sunrise(vis)   : ${fmt(czc.sunrise)}")
+        } catch (t: Throwable) {
+            android.util.Log.e(tag, "probe failed: ${t.message}", t)
+        }
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/ZmanimProvider.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ui/theme/Color.kt =====
+Size: 279 bytes
+Lines: 10
+SHA256: bf601264817dfa97185c3c48d4f81e9b6b81be3ff3de219022b69bf4c18280a4
+
+package com.elad.zmanim.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
+
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
+===== END FILE: app/src/main/java/com/elad/zmanim/ui/theme/Color.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ui/theme/Theme.kt =====
+Size: 1689 bytes
+Lines: 57
+SHA256: 907c3ef3f595d6bb17ad8b182cdd6fa0563519c42f817666ea20ce11e199d73c
+
+package com.elad.zmanim.ui.theme
+
+import android.app.Activity
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+
+private val DarkColorScheme = darkColorScheme(
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40
+
+    /* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
+)
+
+@Composable
+fun ZmanimTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+===== END FILE: app/src/main/java/com/elad/zmanim/ui/theme/Theme.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/ui/theme/Type.kt =====
+Size: 984 bytes
+Lines: 33
+SHA256: 264486f610f389cacdb02e3a20590b6d6cd692478e111073c6669ea4656d02ff
+
+package com.elad.zmanim.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+// Set of Material typography styles to start with
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
+===== END FILE: app/src/main/java/com/elad/zmanim/ui/theme/Type.kt =====
+
+===== BEGIN FILE: app/src/main/java/com/elad/zmanim/widget/ZmanimWidget.kt =====
+Size: 3143 bytes
+Lines: 87
+SHA256: 61839d77da4067f5a0cb00c5792a89288f7a3e37964db0346650f3d09b9534d9
+
+package com.elad.zmanim.widget
+
+import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.glance.GlanceId
+import androidx.glance.GlanceModifier
+import androidx.glance.action.clickable
+import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.action.ActionCallback
+import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.provideContent
+import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.background
+import androidx.glance.layout.Alignment
+import androidx.glance.layout.Column
+import androidx.glance.layout.Spacer
+import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.padding
+import androidx.glance.layout.size
+import androidx.glance.text.Text
+import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
+import com.elad.zmanim.Cities
+import com.elad.zmanim.ZmanimProvider
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+class ZmanimWidget : GlanceAppWidget() {
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent {
+            WidgetContent()
+        }
+    }
+
+    @Composable
+    private fun WidgetContent() {
+        val city = Cities.all.first()
+        val tz = ZoneId.of(city.tzid)
+        val date = LocalDate.now(tz)
+        val z = ZmanimProvider.computeAll(date, city.lat, city.lon, tz, city.elevationMeters)
+        val hhmm = DateTimeFormatter.ofPattern("HH:mm")
+
+        Column(
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .background(ColorProvider(Color.White))
+                .padding(12.dp)
+                .clickable(actionRunCallback<RefreshAction>()),
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+            horizontalAlignment = Alignment.Horizontal.End
+        ) {
+            Text(
+                "זמני היום – ${city.display}",
+                style = TextStyle(color = ColorProvider(Color(0xFF111111)))
+            )
+            Spacer(modifier = GlanceModifier.size(8.dp))
+            Text("זריחה: ${z.sunriseVisible?.format(hhmm) ?: "--"}")
+            Text("שקיעה: ${z.sunsetVisible?.format(hhmm) ?: "--"}")
+            Text("צאת:   ${z.tzeitStandard?.format(hhmm) ?: "--"}")
+            Spacer(modifier = GlanceModifier.size(8.dp))
+            Text(
+                "הקש/י לרענון",
+                style = TextStyle(color = ColorProvider(Color(0xFF777777)))
+            )
+        }
+    }
+}
+
+class ZmanimWidgetReceiver : GlanceAppWidgetReceiver() {
+    override val glanceAppWidget = ZmanimWidget()
+}
+
+class RefreshAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: androidx.glance.action.ActionParameters
+    ) {
+        updateAppWidgetState(context, glanceId) { /* trigger recomposition */ }
+        ZmanimWidget().update(context, glanceId)
+    }
+}
+
+===== END FILE: app/src/main/java/com/elad/zmanim/widget/ZmanimWidget.kt =====
+
+===== BEGIN FILE: app/src/main/res/drawable/ic_launcher_background.xml =====
+Size: 5606 bytes
+Lines: 170
+SHA256: ed423c73a6f40a4d2909f0901e60527b3a807cd59e1b5593bcaae1808b1c6321
+
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,0L19,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,0L29,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,0L39,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,0L49,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,0L59,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,0L69,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,0L79,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M89,0L89,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M99,0L99,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,19L108,19"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,29L108,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,39L108,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,49L108,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,59L108,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,69L108,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,79L108,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,89L108,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,99L108,99"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,29L89,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,39L89,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,49L89,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,59L89,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,69L89,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,79L89,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,19L29,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19L39,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,19L49,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,19L59,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,19L69,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,19L79,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+</vector>
+
+===== END FILE: app/src/main/res/drawable/ic_launcher_background.xml =====
+
+===== BEGIN FILE: app/src/main/res/drawable/ic_launcher_foreground.xml =====
+Size: 1702 bytes
+Lines: 29
+SHA256: 01d1a6a6c1234eb7fe270d097eb283d72b9c95ae5118886f1b6573aad280f1f7
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+===== END FILE: app/src/main/res/drawable/ic_launcher_foreground.xml =====
+
+===== BEGIN FILE: app/src/main/res/layout/glance_default_layout.xml =====
+Size: 214 bytes
+Lines: 5
+SHA256: 4fc6b145e5117dcc2162d7f74e3704cac5fe483a25742611ad8af21f37e5585c
+
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="180dp"
+    android:layout_height="110dp"
+    android:background="#FFFFFF" />
+
+===== END FILE: app/src/main/res/layout/glance_default_layout.xml =====
+
+===== BEGIN FILE: app/src/main/res/mipmap-anydpi/ic_launcher.xml =====
+Size: 343 bytes
+Lines: 5
+SHA256: 88f7653499ef524126ea5018a99baf9cc3269e7e584d6205dfdd76db39f39cc0
+
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+===== END FILE: app/src/main/res/mipmap-anydpi/ic_launcher.xml =====
+
+===== BEGIN FILE: app/src/main/res/mipmap-anydpi/ic_launcher_round.xml =====
+Size: 343 bytes
+Lines: 5
+SHA256: 88f7653499ef524126ea5018a99baf9cc3269e7e584d6205dfdd76db39f39cc0
+
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+===== END FILE: app/src/main/res/mipmap-anydpi/ic_launcher_round.xml =====
+
+===== BEGIN FILE: app/src/main/res/values/colors.xml =====
+Size: 378 bytes
+Lines: 9
+SHA256: b5626527d503417f0d8e5b1e08f338de7b31173bf0e122815f03e64932adbd88
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
+===== END FILE: app/src/main/res/values/colors.xml =====
+
+===== BEGIN FILE: app/src/main/res/values/strings.xml =====
+Size: 68 bytes
+Lines: 2
+SHA256: 58bbcf9b7534aba2e242f41232a11880913da7b2ed3052eac659db3a576107ca
+
+<resources>
+    <string name="app_name">Zmanim</string>
+</resources>
+===== END FILE: app/src/main/res/values/strings.xml =====
+
+===== BEGIN FILE: app/src/main/res/values/themes.xml =====
+Size: 174 bytes
+Lines: 4
+SHA256: f64067e565b806d6eddd9ca7f3a73dcdd924c5a602d0b192b6d21859a53bd867
+
+<resources>
+    <!-- Minimal theme, Compose will override with MaterialTheme -->
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
+
+===== END FILE: app/src/main/res/values/themes.xml =====
+
+===== BEGIN FILE: app/src/main/res/xml/backup_rules.xml =====
+Size: 478 bytes
+Lines: 12
+SHA256: 6cf1a27e6807b1d24e41d3fbe7ddc1bfe1f42226027964f6eaf477d71b43b283
+
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+===== END FILE: app/src/main/res/xml/backup_rules.xml =====
+
+===== BEGIN FILE: app/src/main/res/xml/data_extraction_rules.xml =====
+Size: 551 bytes
+Lines: 18
+SHA256: cb1fc47ab4a984530ed60e0e6ee638929c3038290e7e7e0b4b03a3a30fbe7381
+
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+===== END FILE: app/src/main/res/xml/data_extraction_rules.xml =====
+
+===== BEGIN FILE: app/src/main/res/xml/zmanim_widget_info.xml =====
+Size: 464 bytes
+Lines: 10
+SHA256: be3f8fe1f1be85516ecd552795bcfa7ffb073ace1010c639a2bcda3590f6c9f8
+
+<?xml version="1.0" encoding="utf-8"?>
+<AppWidgetProviderInfo xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="0"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialLayout="@layout/glance_default_layout"
+    android:previewImage="@android:drawable/ic_menu_today"
+    android:description="@string/app_name" />
+
+===== END FILE: app/src/main/res/xml/zmanim_widget_info.xml =====
+
+===== BEGIN FILE: app/src/test/java/com/elad/zmanim/ExampleUnitTest.kt =====
+Size: 339 bytes
+Lines: 16
+SHA256: 426f0a6738bef6a992d0c214667837e20d15e0824a33b8f6bf2d8fb88fbc7b5e
+
+package com.elad.zmanim
+
+import org.junit.Test
+
+import org.junit.Assert.*
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
+}
+===== END FILE: app/src/test/java/com/elad/zmanim/ExampleUnitTest.kt =====
+
+===== BEGIN FILE: build.gradle.kts =====
+Size: 167 bytes
+Lines: 8
+SHA256: dd17fd737f61e9da8d01adf4823f0f8f021c93ab7de73e932eb9f877b1bd4a72
+
+// Root build.gradle.kts (keep it minimal)
+plugins {
+    // no Android plugins here
+}
+
+tasks.register("cleanAll") {
+    doLast { println("Root clean placeholder") }
+}
+
+===== END FILE: build.gradle.kts =====
+
+===== BEGIN FILE: gradle.properties =====
+Size: 1428 bytes
+Lines: 24
+SHA256: ea2485db4bd3ddbff659a6314eab76aa01fb8096b17c30c0368febf9eed6f0e6
+
+# Project-wide Gradle settings.
+# IDE (e.g. Android Studio) users:
+# Gradle settings configured through the IDE *will override*
+# any settings specified in this file.
+# For more details on how to configure your build environment visit
+# http://www.gradle.org/docs/current/userguide/build_environment.html
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+# When configured, Gradle will run in incubating parallel mode.
+# This option should only be used with decoupled projects. For more details, visit
+# https://developer.android.com/r/tools/gradle-multi-project-decoupled-projects
+# org.gradle.parallel=true
+# AndroidX package structure to make it clearer which packages are bundled with the
+# Android operating system, and which are packaged with your app's APK
+# https://developer.android.com/topic/libraries/support-library/androidx-rn
+android.useAndroidX=true
+# Kotlin code style for this project: "official" or "obsolete":
+kotlin.code.style=official
+# Enables namespacing of each library's R class so that its R class includes only the
+# resources declared in the library itself and none from the library's dependencies,
+# thereby reducing the size of the R class for that library
+android.nonTransitiveRClass=true
+org.gradle.java.home=/Applications/Android Studio.app/Contents/jbr/Contents/Home
+
+===== END FILE: gradle.properties =====
+
+===== BEGIN FILE: local.properties =====
+Size: 434 bytes
+Lines: 9
+SHA256: 8b3fcd5e749d3ef32e28ca5c3638271c17ddd8b5f75fdd124277ac0cb2a93ade
+
+## This file is automatically generated by Android Studio.
+# Do not modify this file -- YOUR CHANGES WILL BE ERASED!
+#
+# This file should *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+sdk.dir=/Users/elkes/Library/Android/sdk
+===== END FILE: local.properties =====
+
+===== BEGIN FILE: settings.gradle.kts =====
+Size: 744 bytes
+Lines: 28
+SHA256: 133d5df913987ac35956d03680907a968c46453faa51fac72595bb88b19fb1da
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    // Pin plugin versions here in ONE place
+    plugins {
+        // Stable AGP that works with Gradle 8.13
+        id("com.android.application") version "8.7.2"
+
+        // Kotlin 2.0.x + compose plugin (required from Kotlin 2.0)
+        id("org.jetbrains.kotlin.android") version "2.0.21"
+        id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io") // 👈 add this
+    }
+}
+
+rootProject.name = "Zmanim"
+include(":app")
+
+===== END FILE: settings.gradle.kts =====
+
+==== Summary ====
+Files included: 38
