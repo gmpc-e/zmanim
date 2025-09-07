@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.elad.zmanim"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.elad.zmanim"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 2
         versionName = "1.1"
     }
@@ -34,6 +34,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.runtime)
     // --- Compose BOM (aligns compose artifacts; works well with Kotlin 2.0.x) ---
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
     implementation(composeBom)
