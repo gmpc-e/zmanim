@@ -9,6 +9,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.TimeZone
 
+// NOTE: selector logic now lives in com.elad.zmanim.boards.BoardProfiles.kt
+// This file only computes raw zmanim values.
+
 data class ZmanResults(
     val date: LocalDate,
 
@@ -96,35 +99,35 @@ object ZmanimProvider {
         DebugLog.d("ComputeAll $date @ ($lat,$lon) tz=$tz elev=$observerElevationMeters")
 
         // Morning
-        val alos             = toLocalTime(czcVisible.alosHashachar, tz)
-        val misheyakir11_5   = toLocalTime(czcVisible.getMisheyakir11Point5Degrees(), tz)
-        val misheyakir10_2   = toLocalTime(czcVisible.getMisheyakir10Point2Degrees(), tz)
-        val misheyakir9_5    = toLocalTime(czcVisible.getMisheyakir9Point5Degrees(), tz)
-        val misheyakir7_65   = toLocalTime(czcVisible.getMisheyakir7Point65Degrees(), tz)
+        val alos           = toLocalTime(czcVisible.alosHashachar, tz)
+        val misheyakir11_5 = toLocalTime(czcVisible.getMisheyakir11Point5Degrees(), tz)
+        val misheyakir10_2 = toLocalTime(czcVisible.getMisheyakir10Point2Degrees(), tz)
+        val misheyakir9_5  = toLocalTime(czcVisible.getMisheyakir9Point5Degrees(), tz)
+        val misheyakir7_65 = toLocalTime(czcVisible.getMisheyakir7Point65Degrees(), tz)
 
         // Sunrise (sea-level vs visible)
-        val sunriseSea       = toLocalTime(czcSea.sunrise, tz)
-        val sunriseVis       = toLocalTime(czcVisible.sunrise, tz)
+        val sunriseSea = toLocalTime(czcSea.sunrise, tz)
+        val sunriseVis = toLocalTime(czcVisible.sunrise, tz)
 
         // Latest times (GRA/MGA)
-        val shmaMGA          = toLocalTime(czcVisible.sofZmanShmaMGA, tz)
-        val shmaGRA          = toLocalTime(czcVisible.sofZmanShmaGRA, tz)
-        val tfilaMGA         = toLocalTime(czcVisible.sofZmanTfilaMGA, tz)
-        val tfilaGRA         = toLocalTime(czcVisible.sofZmanTfilaGRA, tz)
+        val shmaMGA  = toLocalTime(czcVisible.sofZmanShmaMGA, tz)
+        val shmaGRA  = toLocalTime(czcVisible.sofZmanShmaGRA, tz)
+        val tfilaMGA = toLocalTime(czcVisible.sofZmanTfilaMGA, tz)
+        val tfilaGRA = toLocalTime(czcVisible.sofZmanTfilaGRA, tz)
 
         // Midday / afternoon
-        val chatzot          = toLocalTime(czcVisible.chatzos, tz)
-        val minGedola        = toLocalTime(czcVisible.minchaGedola, tz)
-        val minKetana        = toLocalTime(czcVisible.minchaKetana, tz)
-        val plag             = toLocalTime(czcVisible.plagHamincha, tz)
+        val chatzot   = toLocalTime(czcVisible.chatzos, tz)
+        val minGedola = toLocalTime(czcVisible.minchaGedola, tz)
+        val minKetana = toLocalTime(czcVisible.minchaKetana, tz)
+        val plag      = toLocalTime(czcVisible.plagHamincha, tz)
 
         // Sunset (sea-level vs visible)
-        val sunsetSea        = toLocalTime(czcSea.sunset, tz)
-        val sunsetVis        = toLocalTime(czcVisible.sunset, tz)
+        val sunsetSea = toLocalTime(czcSea.sunset, tz)
+        val sunsetVis = toLocalTime(czcVisible.sunset, tz)
 
         // Nightfall
-        val tzeitStd         = toLocalTime(czcVisible.tzais, tz)
-        val tzeitRT72        = toLocalTime(czcVisible.tzais72, tz)
+        val tzeitStd  = toLocalTime(czcVisible.tzais, tz)
+        val tzeitRT72 = toLocalTime(czcVisible.tzais72, tz)
 
         return ZmanResults(
             date = date,
@@ -152,7 +155,6 @@ object ZmanimProvider {
 
     // ─────────────────────────────────────────────────────────────────────────────
     // Optional: quick logger to inspect values in Logcat (no UI impact)
-    // Call it from a LaunchedEffect(selectedCity,date) if you want to see values.
     fun logMisheyakirFor(
         date: LocalDate,
         lat: Double,
